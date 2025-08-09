@@ -39,7 +39,7 @@ if BUTTON:
 
     st.text(f"O3\nG91G03J{YJ}Z-{ZP}F{F}\nRTS")
     #### 確認
-    st.text(f"コピー回数{Q}")
-    st.text(f"加工開始{R}")
-    st.text(f"Y,J{YJ}")
-    st.text(f"{r}")
+    #st.text(f"コピー回数{Q}")
+    #st.text(f"加工開始{R}")
+    #st.text(f"Y,J{YJ}")
+    #st.text(f"{r}")
