@@ -71,16 +71,16 @@ if B:  # "計算"ボタンが押された時にBにはtrueが代入されるの�
         SP.append(SYP)
     #### ここからプログラム表示開始 ####
     st.text(f"G90G00X{SXWp}Y{YWm}(この位置で原点設定X0Y0)\nM00")
-    st.text(f"S250M3\nM12\nG90G00X0Y0\nZ50\nZ5\nG01Z0F500\n"
+    st.text(f"S250M3\nM12\nG90G00X0Y0\nZ50\nZ5\nG01Z-0.2F500\n"
             f"X{SXE}F800\nG00Z50\n")
     #### 2回目以降の加工パスのプログラム表示 ####
     for i, SYp in enumerate(SP[:-1], start=1):
-        st.text(f"X0Y0+{SYp}\nZ5\nG01Z0F500\nX{SXE}F800\nG00Z50\n")
+        st.text(f"X0Y0+{SYp}\nZ5\nG01Z-0.2F500\nX{SXE}F800\nG00Z50\n")
     #### 最後の加工パスを条件で分岐させてプログラム表示 ####
     if SP[-2] + SDs >= YW:
         st.text("M09\nM05\nM02")
     else:
-        st.text(f"X0Y0+{YW}\nZ5\nG01Z0F500\nX{SXE}F800\nG00Z50\n")
+        st.text(f"X0Y0+{YW}\nZ5\nG01Z-0.2F500\nX{SXE}F800\nG00Z50\n")
         st.text("\nM09\nM05\nM02")
 
 
