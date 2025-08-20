@@ -2,14 +2,14 @@ import streamlit as st
 
 st.title("底面プログラム")  # タイトル
 
-D = st.text_input("工具径", placeholder="例 125Φの高送りなら125と入力")
+D = st.text_input("工具径", value=125)
 # テキストインプットを使って数字を入力してもらう。(.text_inputで入力される値は数字でも文字列(str)扱いになる)
 # 最初に記述した文字列は入力フォームの説明文としてフォームの上に表示される＝ラベル
-S = st.text_input("回転数", placeholder="500")
+S = st.text_input("回転数", value=500)
 # ラベル＋カンマ＋プレースホルダーを使うとフォーム内に薄文字で入力例などを表示できる
-F = st.text_input("送り", placeholder="4000")
+F = st.text_input("送り", value=5000)
 Z = st.text_input("加工深さ", placeholder="5.5")
-ZP = st.text_input("Zピッチ", placeholder="0.5")
+ZP = st.text_input("Zピッチ", value=0.5)
 XW = st.text_input("X寸法", placeholder="Xの幅を入力")
 YW = st.text_input("Y寸法", placeholder="Yの幅を入力")
 DS = st.text_input("仕上工具径", value=200)
@@ -71,16 +71,16 @@ if B:  # "計算"ボタンが押された時にBにはtrueが代入されるの�
         SP.append(SYP)
     #### ここからプログラム表示開始 ####
     st.text(f"G90G00X{SXWp}Y{YWm}(この位置で原点設定X0Y0)\nM00")
-    st.text(f"S200M3\nM12\nG90G00X0Y0\nZ50\nZ5\nG01Z0F500\n"
-            f"X{SXE}F500\nG00Z50\n")
+    st.text(f"S250M3\nM12\nG90G00X0Y0\nZ50\nZ5\nG01Z0F500\n"
+            f"X{SXE}F800\nG00Z50\n")
     #### 2回目以降の加工パスのプログラム表示 ####
     for i, SYp in enumerate(SP[:-1], start=1):
-        st.text(f"X0Y0+{SYp}\nZ5\nG01Z0F500\nX{SXE}F500\nG00Z50\n")
+        st.text(f"X0Y0+{SYp}\nZ5\nG01Z0F500\nX{SXE}F800\nG00Z50\n")
     #### 最後の加工パスを条件で分岐させてプログラム表示 ####
     if SP[-2] + SDs >= YW:
         st.text("M09\nM05\nM02")
     else:
-        st.text(f"X0Y0+{YW}\nZ5\nG01Z0F500\nX{SXE}F500\nG00Z50\n")
+        st.text(f"X0Y0+{YW}\nZ5\nG01Z0F500\nX{SXE}F800\nG00Z50\n")
         st.text("\nM09\nM05\nM02")
 
 
