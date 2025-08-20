@@ -7,7 +7,7 @@ D = st.text_input("工具径", value=125)
 # 最初に記述した文字列は入力フォームの説明文としてフォームの上に表示される＝ラベル
 S = st.text_input("回転数", value=500)
 # ラベル＋カンマ＋プレースホルダーを使うとフォーム内に薄文字で入力例などを表示できる
-F = st.text_input("送り", value=5000)
+F = st.text_input("送り", value=6000)
 Z = st.text_input("加工深さ", placeholder="5.5")
 ZP = st.text_input("Zピッチ", value=0.5)
 XW = st.text_input("X寸法", placeholder="Xの幅を入力")
