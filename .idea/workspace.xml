@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9a4a7ba5-50fe-4013-a340-042a51e23f6f" name="変更" comment="ver_1.3" />
+    <list default="true" id="9a4a7ba5-50fe-4013-a340-042a51e23f6f" name="変更" comment="ver_1.6(仕上の加工Zを0から-0.2に変更)" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -107,13 +107,65 @@
       <option name="project" value="LOCAL" />
       <updated>1754722134214</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="ver_1.3">
+      <option name="closed" value="true" />
+      <created>1755670608441</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1755670608441</updated>
+    </task>
+    <task id="LOCAL-00007" summary="ver_1.4">
+      <option name="closed" value="true" />
+      <created>1755671749293</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1755671749293</updated>
+    </task>
+    <task id="LOCAL-00008" summary="ver_1.4">
+      <option name="closed" value="true" />
+      <created>1755671849343</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1755671849343</updated>
+    </task>
+    <task id="LOCAL-00009" summary="ver_1.5(VC1=0追加)">
+      <option name="closed" value="true" />
+      <created>1755679455099</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1755679455099</updated>
+    </task>
+    <task id="LOCAL-00010" summary="ver_1.5(仕上の加工Zを0から-0.2に変更)">
+      <option name="closed" value="true" />
+      <created>1755680718502</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1755680718502</updated>
+    </task>
+    <task id="LOCAL-00011" summary="ver_1.6(仕上の加工Zを0から-0.2に変更)">
+      <option name="closed" value="true" />
+      <created>1755680751335</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1755680751335</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="ver_1.0" />
     <MESSAGE value="ver_1.2" />
     <MESSAGE value="ver_1.3" />
-    <option name="LAST_COMMIT_MESSAGE" value="ver_1.3" />
+    <MESSAGE value="ver_1.4" />
+    <MESSAGE value="ver_1.5(VC1=0追加)" />
+    <MESSAGE value="ver_1.5(仕上の加工Zを0から-0.2に変更)" />
+    <MESSAGE value="ver_1.6(仕上の加工Zを0から-0.2に変更)" />
+    <option name="LAST_COMMIT_MESSAGE" value="ver_1.6(仕上の加工Zを0から-0.2に変更)" />
   </component>
 </project>
