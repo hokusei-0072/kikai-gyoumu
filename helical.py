@@ -17,7 +17,7 @@ if CHEK:
     ZHOSEI = st.text_input("Zの仕上しろ",value=0.2)
 ZP = st.text_input("Zピッチ",value=0.5)
 KD = st.text_input("穴径",placeholder="加工したい穴の径を入力")
-HOSEI = st.text_input("仕上しろ",placeholder="-0.01 , +0.1")
+HOSEI = st.text_input("仕上しろ",placeholder="-0.01 , 0.1")
 NZ = st.text_input("Zの逃げ量",value=200)
 
 #### ボタン ####
@@ -28,14 +28,13 @@ if BUTTON:
     KHOSEI = HOSEI
     d = float(D) / 2  # 工具半径を求める。
     if HOSEI != '': # 仕上げしろに数値が入力されているなら処理開始
-        if "+" in HOSEI: # 入力された仕上げしろに＋が含まれているなら処理
-            KH = HOSEI.replace('+', '') # リプレイスを使って＋を削除
-            KH = float(KH) # ＋を削除して残った数値(str)をfloatに変換
-            d = d + KH #工具半径＋仕上げしろで補正値込みの工具半径を求める(削り残し)
-        elif "-" in HOSEI:
-            KH = HOSEI.replace('-', '')
-            KH = float(KH)
+        if "-" in HOSEI:
+            KH = HOSEI.replace('-', '')# リプレイスを使って-を削除
+            KH = float(KH)# -を削除して残った数値(str)をfloatに変換
             d = d - KH #工具半径－仕上げしろで補正値込みの工具半径を求める(追い込み)
+        else:
+            KH = float(HOSEI) # strをfloatに変換
+            d = d + KH #工具半径＋仕上げしろで補正値込みの工具半径を求める(削り残し)
 
     Q = float(Z) // float(ZP)# 加工深さを余り無しで割り算＝コピーの回数。
     r = float(Z) % float(ZP)# 余りだけを計算。
