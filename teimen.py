@@ -86,7 +86,7 @@ if B:  # "計算"ボタンが押された時にBにはtrueが代入されるの�
     if B:
         st.download_button(
             label=f"{filename}-ARAをダウンロード",
-            data=A_proguram_text,
+            data=A_proguram_text.encode("shift_jis"),
             file_name=f"{filename}-ARA.MIN",
             mime="text/plain"
         )
@@ -94,7 +94,7 @@ if B:  # "計算"ボタンが押された時にBにはtrueが代入されるの�
     if B:
         st.download_button(
             label=f"{filename}-SIAをダウンロード",
-            data=S_proguram_text,
+            data=S_proguram_text.encode("shift_jis"),
             file_name=f"{filename}-SIA.MIN",
             mime="text/plain"
         )
