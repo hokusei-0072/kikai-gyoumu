@@ -86,11 +86,11 @@ if P_Button:
     )
 
     # 動作確認用
-    st.text(f"高さ{H}")
-    st.text(f"角度{Tan}")
-    st.text(f"{HOUKOU2}ピッチ{K_Pitch}")
-    st.text(f"余り{r}")
-    st.text(f"加工開始Z{R}")
+    # st.text(f"高さ{H}")
+    # st.text(f"角度{Tan}")
+    # st.text(f"{HOUKOU2}ピッチ{K_Pitch}")
+    # st.text(f"余り{r}")
+    # st.text(f"加工開始Z{R}")
 
     # プログラム表示
     st.text(DATE)
