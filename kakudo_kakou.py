@@ -19,7 +19,7 @@ else:
 
 # 斜面がプラス側かマイナス側か選択
 PorM = st.selectbox(f"斜面の方向を選択({HOUKOU2}+側に斜面,{HOUKOU2}-側に斜面)",["＋側","-側"])
-if PorM == "+側":
+if PorM == "＋側":
     PorM = "+"
 else:
     PorM = "-"
