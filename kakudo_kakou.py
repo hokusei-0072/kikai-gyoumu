@@ -73,7 +73,7 @@ if P_Button:
     program1 = f"VC1={R}\nVC2=0\nG90G00X0Y0\nZ200\nS1000M3\nM12\nCOPY Q{Q}"
 
     program2 = (f"G90G00{HOUKOU}{s1}{HOUKOU2}{s2}{PorM}VC2\nZ=VC1+5\nG01Z=VC1F50\n{HOUKOU}{End}F1000\n"
-                f"G00Z{NZ}\nVC1=VC1-{Pitch}\nVC2=VC2{PorM}{K_Pitch}\nCOPYE\nM09\nM05\nM02")
+                f"G00Z{NZ}\nVC1=VC1-{Pitch}\nVC2=VC2+{K_Pitch}\nCOPYE\nM09\nM05\nM02")
 
     DATE = "\n".join([program1, program2])
 
