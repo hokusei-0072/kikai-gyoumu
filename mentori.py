@@ -18,6 +18,10 @@ else:
 
 # 進行方向の選択
 KAKOUHOUKOU = st.selectbox("加工方向の選択",["+方向","-方向"])
+if KAKOUHOUKOU == "+方向":
+    KAKOUHOUKOU = "+"
+else:
+    KAKOUHOUKOU = "-"
 
 # スタート点の座標
 S1 = st.text_input(f"スタート点({HOUKOU}座標)")
