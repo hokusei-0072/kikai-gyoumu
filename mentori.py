@@ -16,6 +16,9 @@ else:
     HOUKOU = "Y"
     HOUKOU2 = "X"
 
+# 進行方向の選択
+KAKOUHOUKOU = st.selectbox("加工方向の選択",["+方向","-方向"])
+
 # スタート点の座標
 S1 = st.text_input(f"スタート点({HOUKOU}座標)")
 S2 = st.text_input(f"スタート点({HOUKOU2}座標)")
@@ -54,10 +57,10 @@ if KEISAN:
     program1 = f"G90G00X0Y0\nS1000M3\nM12\n{HOUKOU}{S1}{HOUKOU2}{S2}\nZ{SZ}\nCOPY Q{Q}\n"
 
     if OUHUKU:
-        program2 = (f"G91G01{HOUKOU}-{KAKOU_P}F50\nG90{HOUKOU2}{E2}Z{EZ}F500\nG91{HOUKOU}-{KAKOU_P}F50\n"
+        program2 = (f"G91G01{HOUKOU}{KAKOUHOUKOU}{KAKOU_P}F50\nG90{HOUKOU2}{E2}Z{EZ}F500\nG91{HOUKOU}{KAKOUHOUKOU}{KAKOU_P}F50\n"
                     f"G90{HOUKOU2}{S2}Z{SZ}F500\nCOPYE\nM09\nM05\nM02\n")
     else:
-        program2 = (f"G91G01{HOUKOU}-{KAKOU_P}F50\nG90{HOUKOU2}{E2}Z{EZ}F500\nG00Z{NZ}\n"
+        program2 = (f"G91G01{HOUKOU}{KAKOUHOUKOU}{KAKOU_P}F50\nG90{HOUKOU2}{E2}Z{EZ}F500\nG00Z{NZ}\n"
                     f"{HOUKOU2}{S2}\nZ{SZ}\nCOPYE\nM09\nM05\nM02\n")
 
     DATE = "\n".join([program1, program2])
