@@ -7,7 +7,7 @@ from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
 # ====== ここが Google Sheets 接続 ======
 def _get_worksheet():
-    creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"])
+    creds = Credentials.from_service_account_info(st.secrets["google_cloud"])
     scoped = creds.with_scopes(["https://www.googleapis.com/auth/spreadsheets"])
     gc = gspread.authorize(scoped)
 
