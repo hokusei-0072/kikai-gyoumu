@@ -3,11 +3,11 @@ import pandas as pd
 from datetime import date
 import re
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+from google.oauth2.service_account import Credentials
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 
 # =========================
-# 認証情報読み込み（ご提示の方式）
+# 認証情報読み込み（あなたの形式）
 # =========================
 google_cloud_secret = st.secrets["google_cloud"]
 service_account_info = {
@@ -24,27 +24,24 @@ service_account_info = {
     "universe_domain": google_cloud_secret.get("universe_domain", "googleapis.com"),
 }
 
-# スプレッドシートID（そのまま固定でOK。secretsにSHEET_IDがあればそちらを優先）
 SHEET_ID = st.secrets.get("sheets", {}).get(
     "SHEET_ID", "1vRm5sRSDe4HoBX-Agot6naIkTY9mKz66QOVa5K_JaeQ"
 )
 
 SCOPES = [
-    "https://spreadsheets.google.com/feeds",
     "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive",
 ]
 
-# ✅ キャッシュ付きシート取得（ご提示の形式に準拠）
+# ✅ ここが重要：oauth2client → google.oauth2.service_account に統一
 @st.cache_resource
 def get_sheet():
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, SCOPES)
+    creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
     gc = gspread.authorize(creds)
-    # sheet1 = 先頭シート
-    return gc.open_by_key(SHEET_ID).sheet1
+    return gc.open_by_key(SHEET_ID).sheet1  # ← 先頭シートを返す
 
-sheet = get_sheet()  # ← ご提示の形式と同じ
+sheet = get_sheet()  # ← あなたの形式と同じ
+
 
 
 # ====== 小ユーティリティ ======
