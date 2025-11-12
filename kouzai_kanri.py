@@ -67,7 +67,7 @@ def load_df():
 
     df["材質"] = df["材質"].astype(str).map(clean_text)
     df["サイズ"] = df["サイズ"].astype(str).map(clean_text)
-    df["仕上がり"] = pd.to_numeric(df["仕上がり"], errors="coerce").fillna(0).astype(int)
+    df["仕上がり"] = df["仕上がり"].astype(str).map(clean_text)
     df["個数"] = pd.to_numeric(df["個数"], errors="coerce")
     df["最終更新日"] = pd.to_datetime(df["最終更新日"], errors="coerce").dt.date
     return df
