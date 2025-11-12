@@ -146,7 +146,7 @@ elif SOUSA == "在庫の増減":
     )
 
     if maker_sel == "選択してください":
-        st.info("まずメーカー名を選んでください。")
+        st.info("メーカー名を選んでください。")
         st.stop()
 
     maker_sel = clean_text(maker_sel)
@@ -175,14 +175,14 @@ elif SOUSA == "在庫の増減":
             cur = int(df.loc[ridx_preview, "枚数"]) if pd.notna(df.loc[ridx_preview, "枚数"]) else 0
             st.caption(f"現在の在庫：{cur} 枚")
 
-    change = st.number_input("増減枚数（入庫は正、出庫は負）", value=0, step=1)
+    change = st.number_input("増減枚数（10枚入庫なら10、10枚出庫は-10）", value=0, step=1)
     send_date = st.date_input("更新日", value=date.today())
 
     if st.button("在庫を更新", type="primary"):
         if buhin_label == "選択してください":
             st.error("部品番号を選択してください")
         elif change == 0:
-            st.error("増減枚数を入力してください（正または負）")
+            st.error("増減枚数を入力してください（プラスまたはマイナス）")
         else:
             idx = filtered.index[filtered["__label__"] == buhin_label]
             if len(idx) == 0:
