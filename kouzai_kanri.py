@@ -153,7 +153,7 @@ elif SOUSA == "在庫の増減":
     filtered = df[df["材質"] == maker_sel].copy()
 
     def make_label(row):
-        t = f" {row['仕上がり']:.1f}" if pd.notna(row["仕上がり"]) else ""
+        t = f" {row['仕上がり']:}" if pd.notna(row["仕上がり"]) else ""
         return f"{row['サイズ']}{t}"
 
     if filtered.empty:
