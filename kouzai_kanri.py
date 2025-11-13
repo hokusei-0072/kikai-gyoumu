@@ -86,10 +86,12 @@ st.title("鋼材在庫 管理アプリ")
 
 df = load_df()
 SOUSA = st.radio("操作を選択", ["在庫の新規追加", "在庫の増減"], horizontal=True)
+#horizontalはラジオの選択肢を並べる方向を指定できるTrueは横Falseは縦になる。
 
 # 既存材質一覧（空文字除外）
 maker_list = sorted(x for x in set(df["材質"].dropna()) if clean_text(x))
 
+##### 在庫の新規追加 #####
 if SOUSA == "在庫の新規追加":
     st.subheader("在庫の新規追加")
 
@@ -99,22 +101,22 @@ if SOUSA == "在庫の新規追加":
         index=0,
     )
 
-    if name_choice == "その他材質":
+    if name_choice == "その他材質": # その他材質の追加
         name = clean_text(st.text_input("材質を入力してください"))
     else:
         name = "" if name_choice == "選択してください" else clean_text(name_choice)
 
-    part = clean_text(st.text_input("サイズを入力してください"))
-    itaatu = st.radio("仕上がり", ["6F","4F","2F","その他"])
-    maisuu = st.number_input("個数を入力してください", value=1, step=1)
-    send_date = st.date_input("登録日", value=date.today())
+    part = clean_text(st.text_input("サイズを入力してください"))# サイズの入力
+    itaatu = st.radio("仕上がり", ["6F","4F","2F","その他"])# 鋼材の仕上がりを選択
+    maisuu = st.number_input("個数を入力してください", value=1, step=1)# 個数の入力
+    send_date = st.date_input("登録日", value=date.today())# 登録日
 
     if name and part:
         exist = df[(df["材質"] == name) & (df["サイズ"] == part)]
         if not exist.empty:
             st.info(f"既存データあり：現在の個数 {int(exist.iloc[0]['個数'])}")
 
-    if st.button("登録 / 反映", type="primary"):
+    if st.button("登録 / 反映", type="primary"):# 登録ボタン
         if not name or name == "選択してください":
             st.error("材質を選択/入力してください")
         elif not part:
@@ -136,16 +138,18 @@ if SOUSA == "在庫の新規追加":
             save_df(df)
             st.success("保存しました！")
 
+##### 在庫の増減 #####
 elif SOUSA == "在庫の増減":
     st.subheader("在庫の増減")
 
+    # 材質から寸法を絞り込み
     maker_sel = st.selectbox(
         "材質を選択してサイズを絞り込み",
         ["選択してください", *maker_list],
         index=0,
     )
 
-    if maker_sel == "選択してください":
+    if maker_sel == "選択してください":# 材質を選んでいないならメッセージを表示
         st.info("材質を選んでください。")
         st.stop()
 
@@ -193,8 +197,8 @@ elif SOUSA == "在庫の増減":
                 new_val = current + int(change)
 
                 # 0未満を禁止する場合は以下を有効化
-                # if new_val < 0:
-                #     st.error("在庫がマイナスになります。値を見直してください。"); st.stop()
+                if new_val < 0:
+                     st.error("在庫がマイナスになります。値を見直してください。"); st.stop()
 
                 df.loc[ridx, "個数"] = new_val
                 df.loc[ridx, "最終更新日"] = send_date
