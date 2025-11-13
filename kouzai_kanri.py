@@ -106,7 +106,7 @@ if SOUSA == "在庫の新規追加":
 
     part = clean_text(st.text_input("サイズを入力してください"))
     itaatu = st.radio("仕上がり", ["6F","4F","2F","その他"])
-    maisuu = st.number_input("個数を入力してください", value=0, step=1)
+    maisuu = st.number_input("個数を入力してください", value=1, step=1)
     send_date = st.date_input("登録日", value=date.today())
 
     if name and part:
