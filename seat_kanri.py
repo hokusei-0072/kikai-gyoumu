@@ -33,15 +33,45 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-# ✅ ここが重要：oauth2client → google.oauth2.service_account に統一
+
+# ========== gspread クライアント / ワークシート取得 ==========
 @st.cache_resource
-def get_sheet():
+def get_gspread_client():
     creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
-    gc = gspread.authorize(creds)
-    return gc.open_by_key(SHEET_ID).sheet1  # ← 先頭シートを返す
+    return gspread.authorize(creds)
 
-sheet = get_sheet()  # ← あなたの形式と同じ
+def get_spreadsheet():
+    gc = get_gspread_client()
+    return gc.open_by_key(SHEET_ID)
 
+def get_ws_primary():
+    # 読み込みは常に先頭シート
+    return get_spreadsheet().sheet1
+
+def get_ws_backup():
+    """
+    書き込み用バックアップワークシート（2枚目）を返す。
+    足りなければ自動作成（タイトル: "Backup"）。
+    """
+    sh = get_spreadsheet()
+    try:
+        ws2 = sh.get_worksheet(1)   # 2枚目(0始まり)
+        if ws2 is None:
+            raise gspread.WorksheetNotFound("2枚目が None")
+        return ws2
+    except Exception:
+        # 無ければ作成（サイズは適当でOK。set_with_dataframeで自動調整する）
+        try:
+            sh.add_worksheet(title="Backup", rows=1000, cols=26)
+        except gspread.exceptions.APIError:
+            # すでに"Backup"が存在/権限問題の可能性 → 再取得を試す
+            pass
+        # 再取得（作れた前提 or 既に存在）
+        ws_list = sh.worksheets()
+        if len(ws_list) >= 2:
+            return sh.get_worksheet(1)
+        # それでもダメなら先頭シートを返す（最悪のフォールバック）
+        return sh.sheet1
 
 
 # ====== 小ユーティリティ ======
@@ -56,6 +86,7 @@ def clean_text(s: str) -> str:
 # ====== データ読み書き ======
 @st.cache_data(ttl=60)
 def load_df():
+    sheet = get_ws_primary()
     df = get_as_dataframe(sheet, evaluate_formulas=True, dtype=None, header=0)
     df = df.dropna(how="all")
 
@@ -74,9 +105,24 @@ def load_df():
 
 
 def save_df(df: pd.DataFrame):
-    # 全消し→一括書き戻し（ヘッダ含む）
-    sheet.clear()
-    set_with_dataframe(sheet, df, include_index=False, include_column_header=True, resize=True)
+    """
+    書き込みはシート1（本番）とシート2（バックアップ）の両方へ。
+    シート2が無ければ自動作成。
+    """
+    ws1 = get_ws_primary()
+    ws2 = get_ws_backup()
+
+    # まず本番へ書き込み
+    ws1.clear()
+    set_with_dataframe(ws1, df, include_index=False, include_column_header=True, resize=True)
+
+    # 次にバックアップへ書き込み（失敗しても本番は成功させる）
+    try:
+        ws2.clear()
+        set_with_dataframe(ws2, df, include_index=False, include_column_header=True, resize=True)
+    except Exception as e:
+        st.warning(f"バックアップシートへの書き込みで問題が発生しました：{e}")
+
     # 読み直しのためキャッシュ無効化
     st.cache_data.clear()
 
