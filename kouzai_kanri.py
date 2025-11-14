@@ -33,16 +33,32 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-# ✅ ここが重要：oauth2client → google.oauth2.service_account に統一
+# ====== GSpread の共通ハンドル ======
 @st.cache_resource
-def get_sheet():
+def get_spreadsheet():
+    """Spreadsheetオブジェクト（キャッシュ）"""
     creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
     gc = gspread.authorize(creds)
-    return gc.open_by_key(SHEET_ID).sheet1  # ← 先頭シートを返す
+    return gc.open_by_key(SHEET_ID)
 
-sheet = get_sheet()
+def get_ws_primary():
+    """読み書き：シート1（既存ロジックの読み込み先）"""
+    return get_spreadsheet().sheet1
 
+def get_ws_backup():
+    """
+    書き込み専用：シート2
+    なければ作る（タイトル: 'backup'）。存在すればそのまま返す。
+    """
+    sh = get_spreadsheet()
+    ws2 = sh.get_worksheet(1)
+    if ws2 is None:
+        # シート2を作成（行・列は大きめに確保）
+        ws2 = sh.add_worksheet(title="backup", rows="2000", cols="50")
+    return ws2
 
+# 既存と互換の変数名を維持（読み込みはシート1）
+sheet = get_ws_primary()
 
 # ====== 小ユーティリティ ======
 def clean_text(s: str) -> str:
@@ -52,10 +68,10 @@ def clean_text(s: str) -> str:
     s = re.sub(r"\s+", " ", s)
     return s
 
-
 # ====== データ読み書き ======
 @st.cache_data(ttl=60)
 def load_df():
+    # 読み込みはシート1のみ
     df = get_as_dataframe(sheet, evaluate_formulas=True, dtype=None, header=0)
     df = df.dropna(how="all")
 
@@ -72,14 +88,25 @@ def load_df():
     df["最終更新日"] = pd.to_datetime(df["最終更新日"], errors="coerce").dt.date
     return df
 
-
 def save_df(df: pd.DataFrame):
-    # 全消し→一括書き戻し（ヘッダ含む）
-    sheet.clear()
-    set_with_dataframe(sheet, df, include_index=False, include_column_header=True, resize=True)
+    """
+    書き込みはシート1とシート2に**同内容で二重書き込み**。
+    - 先にprimary（sheet1）
+    - 続けてbackup（sheet2）
+    """
+    ws1 = get_ws_primary()
+    ws2 = get_ws_backup()
+
+    # シート1 全消し→書き戻し
+    ws1.clear()
+    set_with_dataframe(ws1, df, include_index=False, include_column_header=True, resize=True)
+
+    # シート2 全消し→書き戻し（バックアップ）
+    ws2.clear()
+    set_with_dataframe(ws2, df, include_index=False, include_column_header=True, resize=True)
+
     # 読み直しのためキャッシュ無効化
     st.cache_data.clear()
-
 
 # ---------- アプリ本体 ----------
 st.title("鋼材在庫 管理アプリ")
@@ -101,22 +128,22 @@ if SOUSA == "在庫の新規追加":
         index=0,
     )
 
-    if name_choice == "その他材質": # その他材質の追加
+    if name_choice == "その他材質":  # その他材質の追加
         name = clean_text(st.text_input("材質を入力してください"))
     else:
         name = "" if name_choice == "選択してください" else clean_text(name_choice)
 
-    part = clean_text(st.text_input("サイズを入力してください"))# サイズの入力
-    itaatu = st.radio("仕上がり", ["6F","4F","2F","その他"])# 鋼材の仕上がりを選択
-    maisuu = st.number_input("個数を入力してください", value=1, step=1)# 個数の入力
-    send_date = st.date_input("登録日", value=date.today())# 登録日
+    part = clean_text(st.text_input("サイズを入力してください"))  # サイズの入力
+    itaatu = st.radio("仕上がり", ["6F","4F","2F","その他"])  # 鋼材の仕上がりを選択
+    maisuu = st.number_input("個数を入力してください", value=1, step=1)  # 個数の入力
+    send_date = st.date_input("登録日", value=date.today())  # 登録日
 
     if name and part:
         exist = df[(df["材質"] == name) & (df["サイズ"] == part)]
         if not exist.empty:
             st.info(f"既存データあり：現在の個数 {int(exist.iloc[0]['個数'])}")
 
-    if st.button("登録 / 反映", type="primary"):# 登録ボタン
+    if st.button("登録 / 反映", type="primary"):  # 登録ボタン
         if not name or name == "選択してください":
             st.error("材質を選択/入力してください")
         elif not part:
@@ -136,7 +163,7 @@ if SOUSA == "在庫の新規追加":
                 df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
             save_df(df)
-            st.success("保存しました！")
+            st.success("保存しました！（シート1/シート2へバックアップ済み）")
 
 ##### 在庫の増減 #####
 elif SOUSA == "在庫の増減":
@@ -149,7 +176,7 @@ elif SOUSA == "在庫の増減":
         index=0,
     )
 
-    if maker_sel == "選択してください":# 材質を選んでいないならメッセージを表示
+    if maker_sel == "選択してください":  # 材質を選んでいないならメッセージを表示
         st.info("材質を選んでください。")
         st.stop()
 
@@ -196,11 +223,12 @@ elif SOUSA == "在庫の増減":
                 current = int(df.loc[ridx, "個数"]) if pd.notna(df.loc[ridx, "個数"]) else 0
                 new_val = current + int(change)
 
-                # 0未満を禁止する場合は以下を有効化
+                # 0未満を禁止
                 if new_val < 0:
-                     st.error("在庫がマイナスになります。値を見直してください。"); st.stop()
+                    st.error("在庫がマイナスになります。値を見直してください。")
+                    st.stop()
 
                 df.loc[ridx, "個数"] = new_val
                 df.loc[ridx, "最終更新日"] = send_date
                 save_df(df)
-                st.success(f"在庫を {current} → {new_val} に更新しました。")
+                st.success(f"在庫を {current} → {new_val} に更新しました。（シート1/シート2へバックアップ済み）")
